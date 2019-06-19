@@ -4,29 +4,43 @@ import {Meteor} from 'meteor/meteor';
 import {HTTP} from "meteor/http";
 
 //Component imports
+import Instructions from "./Instructions";
 
 //Semantic-UI
 import {Grid, Button, Input, Segment} from "semantic-ui-react";
 import imageToSlices from "image-to-slices";
 
 //Other
+import {toast} from "react-toastify";
 
 //Component
 let canvas;
 let ctx;
-let mouse = {
-    x: 0,
-    y: 0
-};
-let start = {
-    x: 0,
-    y: 0
-};
-let offset = {
-    x: 0,
-    y: 0
-};
+let mouse = {x: 0, y: 0};
+let start = {x: 0, y: 0};
+let offset = {x: 0, y: 0};
 let imageState = 0;
+
+//Toast controls
+let toastId;
+const notifyToast = () => {
+    toastId = toast("Performing OCR and generating .csv file. Please wait...", { autoClose: false });
+};
+const updateToast = () => {
+    toast.update(toastId, {
+        render: 'Download successful!',
+        type: toast.TYPE.SUCCESS,
+        autoClose: 5000
+    });
+};
+const updateToastError = () => {
+    toast.update(toastId, {
+        render: 'Something went wrong! Please contact admin.',
+        type: toast.TYPE.ERROR,
+        autoClose: 5000
+    });
+};
+
 class ImageCanvas extends Component {
     handleMousePos = e => {
         if(e.pageX) {
@@ -104,6 +118,14 @@ class ImageCanvas extends Component {
         let rowCount = document.getElementById('rowCount').value;
         let colCount = document.getElementById('colCount').value;
 
+        if(typeof rowCount === 'undefined' || typeof colCount === 'undefined' || rowCount === null || colCount === null || rowCount < 1 || colCount < 1) {
+            rowCount = 1;
+            colCount = 1;
+            toast.info('Row/Col count invalid. Assumed default is 1 x 1');
+        }
+
+        notifyToast();
+
         let totalWidth = mouse.x - start.x;
         let totalHeight = mouse.y - start.y;
 
@@ -143,7 +165,7 @@ class ImageCanvas extends Component {
                         }
                     }, (err, res) => {
                         if(err) {
-                            console.log(err);
+                            updateToastError();
                         } else {
 
                             // 6. Save OCR results (in proper order)
@@ -170,6 +192,7 @@ class ImageCanvas extends Component {
                                 document.body.appendChild(link);
 
                                 link.click();
+                                updateToast();
                             }
                         }
                     });
@@ -195,6 +218,7 @@ class ImageCanvas extends Component {
             <Grid columns={4} stackable>
                 <Grid.Column width={4}>
                     <Segment>
+                        <Instructions/>
                         <Input id={'rowCount'} min={1} max={20} type={'number'} placeholder={'# Rows'} fluid/>
                         <br/>
                         <Input id={'colCount'} min={1} max={20} type={'number'} placeholder={'# Columns'} fluid/>

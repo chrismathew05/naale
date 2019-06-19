@@ -8,10 +8,11 @@ import ImageCanvas from "./ImageCanvas";
 
 // import Navigation from "./Navigation";
 import WelcomePage from "./WelcomePage";
-import {Button, Header} from "semantic-ui-react";
-
+import {Header} from "semantic-ui-react";
 
 //Other
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 
 class App extends Component {
     state = {
@@ -34,7 +35,7 @@ class App extends Component {
                         <WelcomePage file={this.handleFileUpload}/> : <ImageCanvas file={this.state.file} resetFile={this.resetFile}/>
                     }
                 </div>
-
+                <ToastContainer/>
             </div>
         )
     }

@@ -5,8 +5,7 @@ import {Meteor} from 'meteor/meteor';
 //Component imports
 
 //Semantic-UI
-import {Header, Button} from "semantic-ui-react";
-
+import {Segment, Header, Icon, Button} from "semantic-ui-react";
 
 //Other
 
@@ -22,7 +21,14 @@ class WelcomePage extends Component {
     render() {
         return (
             <div style={{textAlign: 'center'}}>
-                <Button primary onClick={() => document.getElementById('fileInput').click()}>Upload table image</Button>
+                <Segment placeholder>
+                    <Header icon>
+                        <Icon name='file image outline' />
+                        Upload an image of your table to get started. <br/>
+                        Please note we do not store any of your data on our servers. We are powered by the OCR.SPACE API whose <a href="https://ocr.space/faq" target="_blank">privacy policy</a> states the same.
+                    </Header>
+                    <Button primary onClick={() => document.getElementById('fileInput').click()}>Click to Upload</Button>
+                </Segment>
                 <input id={'fileInput'} style={{display: 'none'}} type='file' onChange={this.passDataToParent}/>
             </div>
         )
